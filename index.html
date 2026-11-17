@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8"><title>เช็คอินฝ่ายดนตรี</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f4ef;--card:#fff;--tx:#1d1b18;--mu:#6b665e;--ac:#5b3fd1;--ok:#17803d;--bad:#c0392b;--bd:#e3dfd6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16141a;--card:#201d27;--tx:#f1eee8;--mu:#a39eaa;--ac:#9d86ff;--ok:#4cc17a;--bad:#ff7a6b;--bd:#37323f}}
+:root[data-theme="dark"]{--bg:#16141a;--card:#201d27;--tx:#f1eee8;--mu:#a39eaa;--ac:#9d86ff;--ok:#4cc17a;--bad:#ff7a6b;--bd:#37323f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 "Noto Sans Thai",system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:1.3rem;margin:4px 0 12px}.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+.clock{font-size:2.6rem;font-weight:700;text-align:center;font-variant-numeric:tabular-nums}.mu{color:var(--mu);font-size:.9rem}
+button{font:inherit;border:0;border-radius:12px;padding:14px;font-weight:600;cursor:pointer;width:100%}
+.in{background:var(--ok);color:#fff}.out{background:var(--bad);color:#fff}.pri{background:var(--ac);color:#fff}.sec{background:transparent;border:1px solid var(--bd);color:var(--tx)}
+.row{display:flex;gap:10px}input{font:inherit;width:100%;padding:12px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
+.tabs{display:flex;gap:8px;margin-bottom:12px}.tabs button{padding:10px}.tabs .on{background:var(--ac);color:#fff}
+.wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.88rem}td,th{padding:8px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+.badge{padding:2px 8px;border-radius:99px;font-size:.8rem;background:var(--bd)}.late{color:var(--bad);font-weight:700}
+#cam{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;z-index:9}
+#cam video{width:100%;max-width:360px;border-radius:16px;transform:scaleX(-1);background:#000}
+#msg{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:12px;border-radius:12px;display:none;text-align:center;z-index:10}
+body{font-family:'Prompt','Noto Sans Thai',system-ui,sans-serif;background:radial-gradient(900px 420px at 50% -120px,color-mix(in srgb,var(--ac) 22%,transparent),transparent),var(--bg)}
+main{padding:20px 16px 40px}
+.top{display:flex;align-items:center;gap:12px;margin:2px 0 16px}.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#7c5cff,#c04bd9);display:grid;place-items:center;font-size:1.5rem;box-shadow:0 6px 16px rgba(124,92,255,.35)}
+.top h1{margin:0;font-size:1.25rem;line-height:1.2}.top p{margin:0;color:var(--mu);font-size:.82rem}
+.card{border-radius:20px;border:1px solid var(--bd);box-shadow:0 4px 18px rgba(30,20,60,.06)}
+.hero{background:linear-gradient(135deg,#5b3fd1,#a23fc4);color:#fff;border:0;text-align:center;padding:22px 16px}
+.hero .mu,.hero #net{color:rgba(255,255,255,.85)}.hero .clock{font-size:3.1rem;letter-spacing:1px}
+#sch{display:inline-block;margin:6px 0;padding:4px 14px;border-radius:99px;background:rgba(255,255,255,.18);font-weight:500}
+.tabs{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:4px}.tabs button{background:transparent;border:0;color:var(--mu);border-radius:10px}.tabs .on{background:var(--ac);color:#fff;box-shadow:0 3px 10px rgba(91,63,209,.35)}
+button{transition:transform .12s,filter .12s}button:active{transform:scale(.97)}button:hover{filter:brightness(1.07)}
+.big{padding:20px 8px;font-size:1.05rem;display:flex;flex-direction:column;align-items:center;gap:4px;border-radius:18px}.big span{font-size:1.7rem;line-height:1}
+.in{background:linear-gradient(135deg,#1f9d55,#17803d)}.out{background:linear-gradient(135deg,#e5594a,#c0392b)}
+input{border-radius:12px;padding:13px;font-size:1rem}input:focus{outline:2px solid var(--ac);border-color:transparent}
+th{color:var(--mu);font-weight:500;font-size:.78rem}tr:last-child td{border-bottom:0}
+.card>b{display:block;margin-bottom:8px;font-size:1.02rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.st{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:12px 6px;text-align:center;font-size:.78rem;color:var(--mu)}.st b{display:block;font-size:1.4rem;color:var(--tx);line-height:1.2}
+.state{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:16px;margin-bottom:10px;font-weight:500;background:var(--card);border:1px solid var(--bd)}.state span{font-size:1.4rem}.state.ok{border-color:var(--ok);color:var(--ok)}.state.bad{border-color:var(--bad);color:var(--bad)}.state.mu{color:var(--mu)}
+.item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bd)}.item:last-child{border:0}.ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:700;color:#fff;flex:none}.ic.in{background:var(--ok)}.ic.out{background:var(--bad)}
+.gr{flex:1;min-width:0}.gr b{display:block}.item small,.gr small{color:var(--mu);font-size:.78rem}.rt{text-align:right;display:flex;flex-direction:column;gap:2px;font-size:.85rem}.okc{color:var(--ok);font-weight:600}
+.empty{text-align:center;color:var(--mu);padding:22px 0}
+#cam .hint{color:#fff;font-weight:500;text-align:center}#cam video{border:3px solid rgba(255,255,255,.7);aspect-ratio:3/4;object-fit:cover}
+.card>b::before{content:'';display:inline-block;width:4px;height:1em;border-radius:2px;background:var(--ac);margin-right:8px;vertical-align:-2px}
+.del{width:auto;padding:6px 10px;background:transparent;border:1px solid var(--bd);color:var(--bad);border-radius:10px}.dang{color:var(--bad);border-color:var(--bad)}
+@media (min-width:700px){main{max-width:720px}}
+</style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap"></head><body><main>
+<div class="top"><div class="logo">🎵</div><div><h1>เช็คอินฝ่ายดนตรี</h1><p>เช็คอิน-เอาท์ ง่ายๆ ใช้ได้แม้ไม่มีเน็ต</p></div></div>
+<div class="tabs"><button id="t1" class="on">👤 ผู้ใช้งาน</button><button id="t2" class="sec" style="display:none">⚙️ ผู้แก้ไข</button></div>
+
+<section id="v1">
+ <div class="card hero"><div class="clock" id="clk">--:--:--</div><div class="mu" style="text-align:center" id="sch">กำลังโหลดเวลา…</div>
+ <div id="net" class="mu" style="text-align:center"></div></div>
+ <div class="card"><label class="mu">ชื่อของคุณ</label><input id="nm" placeholder="ชื่อ-นามสกุล" maxlength="60" style="margin:6px 0 12px">
+ <div class="row"><button class="in big" id="bin"><span>📸</span>เช็คอิน</button><button class="out big" id="bout"><span>👋</span>เช็คเอาท์</button></div></div>
+ <div id="stats"></div><div class="card"><b>ประวัติของฉัน</b><div id="mine"></div></div>
+</section>
+
+<section id="v2" style="display:none"><div id="astats" class="stats"></div>
+ <div class="card"><b>ตั้งเวลา (เฉพาะแอดมิน)</b>
+ <div class="row" style="margin:10px 0"><div style="flex:1"><label class="mu">เช็คอิน</label><input type="time" id="sIn"></div><div style="flex:1"><label class="mu">เช็คเอาท์</label><input type="time" id="sOut"></div></div>
+ <button class="pri" id="save">บันทึกเวลา</button></div>
+ <div class="card"><b>สรุปค่าปรับรายคน</b><div class="wrap"><table id="sum"></table></div></div>
+ <div class="card"><b>รายการทั้งหมด</b><div class="wrap"><table id="all"></table></div><div style="display:grid;gap:10px;margin-top:14px"><button class="pri" id="xls">📊 บันทึกเป็น Excel (.xlsx)</button><button class="sec" id="csv">ดาวน์โหลด CSV</button><button class="sec dang" id="delall">🗑 ลบประวัติทั้งหมด</button></div></div>
+</section>
+</main>
+<div id="cam"><div class="hint">จัดหน้าให้อยู่กลางกรอบ แล้วกดถ่าย 📷</div><video id="vid" autoplay playsinline muted></video><div class="row" style="max-width:360px;width:100%"><button class="pri" id="snap">ถ่ายหน้าและยืนยัน</button><button class="sec" id="skip" style="background:#fff">ยกเลิก</button></div></div>
+<div id="msg"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let sched=LS.get('sched',null),db=null,user=null,isAdmin=false,pending=null,stream=null,rows=[];
+const pad=n=>String(n).padStart(2,'0'),hm=d=>pad(d.getHours())+':'+pad(d.getMinutes()),
+ fmt=ts=>{const d=new Date(ts);return d.getDate()+'/'+(d.getMonth()+1)+' '+hm(d)};
+function toast(t){const m=$('msg');m.textContent=t;m.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>m.style.display='none',4500)}
+// ค่าปรับ: 1-10 นาที 5฿/นาที, นาทีที่ 11-60 นาทีละ 10฿ (เพดาน 550), หลัง 60 นาที +200฿ ต่อชั่วโมง (ปัดขึ้น)
+function fine(L){if(L<=0)return 0;const a=Math.min(L,60);let f=Math.min(a,10)*5+Math.max(a-10,0)*10;f=Math.min(f,550);if(L>60)f+=Math.ceil((L-60)/60)*200;return f}
+function lateMin(ts){if(!sched||!sched.in)return 0;const d=new Date(ts),[h,m]=sched.in.split(':').map(Number),s=new Date(d.getFullYear(),d.getMonth(),d.getDate(),h,m,0);
+ const diff=(d-s)/60000;return diff>0?Math.ceil(diff):0}
+function showSched(){$('sch').textContent=sched&&sched.in?`เข้า ${sched.in} น. • ออก ${sched.out||'-'} น.`:'แอดมินยังไม่ได้ตั้งเวลา'}
+setInterval(()=>{const d=new Date();$('clk').textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())},500);
+function showNet(){const q=LS.get('q',[]);$('net').textContent=(navigator.onLine?'🟢 ออนไลน์':'🟠 ออฟไลน์ (บันทึกในเครื่อง)')+(q.length?` • รอส่ง ${q.length} รายการ`:'')}
+// ---- ส่งข้อมูล (คิวในเครื่อง ส่งซ้ำอัตโนมัติ) ----
+let flushing=false;
+async function flush(){if(flushing||!db)return;flushing=true;try{let q=LS.get('q',[]);for(const r of q.slice()){try{await db.doc('checkins/'+r.id).set(r);q=q.filter(x=>x.id!==r.id);LS.set('q',q)}catch(e){break}}}finally{flushing=false;showNet();mine()}}
+function addRec(type,photo){const nm=$('nm').value.trim();const ts=Date.now();const lm=type==='in'?lateMin(ts):0;
+ const r={id:ts+'-'+Math.random().toString(36).slice(2,7),name:nm,type,ts,late:lm,fine:type==='in'?fine(lm):0,photo:photo||''};
+ const h=LS.get('hist',[]);h.unshift(r);LS.set('hist',h.slice(0,60));const q=LS.get('q',[]);q.push(r);LS.set('q',q);
+ toast(type==='in'?(lm>0?`เช็คอินแล้ว สาย ${lm} นาที ปรับ ${r.fine} บาท`:'เช็คอินแล้ว ตรงเวลา 👍'):'เช็คเอาท์แล้ว');mine();showNet();flush()}
+function mine(){const q=new Set(LS.get('q',[]).map(x=>x.id));$('mine').innerHTML='<tr><th>เวลา</th><th>ประเภท</th><th>สาย</th><th>ปรับ</th><th>สถานะ</th></tr>'+
+ LS.get('hist',[]).slice(0,15).map(r=>`<tr><td>${fmt(r.ts)}</td><td>${r.type==='in'?'เข้า':'ออก'}</td><td class="${r.late?'late':''}">${r.late?r.late+' น.':'-'}</td><td>${r.fine||'-'}</td><td>${q.has(r.id)?'⏳ รอส่ง':'✅ ส่งแล้ว'}</td></tr>`).join('')}
+function mine(){const q=new Set(LS.get('q',[]).map(x=>x.id)),h=LS.get('hist',[]),td=new Date().toDateString(),t=h.filter(r=>new Date(r.ts).toDateString()===td),li=t.find(r=>r.type==='in'),lo=t.find(r=>r.type==='out');
+ const tf=h.reduce((a,r)=>a+(r.fine||0),0),tl=h.filter(r=>r.late).length;
+ const st=lo?['✅','เช็คเอาท์แล้ววันนี้ '+hm(new Date(lo.ts)),'ok']:li?[li.late?'⏰':'✅','เช็คอินแล้ว '+hm(new Date(li.ts))+(li.late?' (สาย '+li.late+' น.)':' ตรงเวลา'),li.late?'bad':'ok']:['🕘','วันนี้ยังไม่ได้เช็คอิน','mu'];
+ $('stats').innerHTML=`<div class="state ${st[2]}"><span>${st[0]}</span>${st[1]}</div><div class="stats"><div class="st"><b>${h.filter(r=>r.type==='in').length}</b>ครั้งที่เข้า</div><div class="st"><b>${tl}</b>ครั้งที่สาย</div><div class="st"><b>${tf}฿</b>ค่าปรับสะสม</div></div>`;
+ $('mine').innerHTML=h.length?h.slice(0,15).map(r=>`<div class="item"><div class="ic ${r.type}">${r.type==='in'?'↘':'↗'}</div><div class="gr"><b>${r.type==='in'?'เข้างาน':'เลิกงาน'}</b><small>${fmt(r.ts)}</small></div><div class="rt">${r.late?`<span class="late">สาย ${r.late} น. • ${r.fine}฿</span>`:r.type==='in'?'<span class="okc">ตรงเวลา</span>':''}<small>${q.has(r.id)?'⏳ รอส่ง':'✅ ส่งแล้ว'}</small></div></div>`).join(''):'<div class="empty">ยังไม่มีประวัติ<br>กดเช็คอินเพื่อเริ่มต้น</div>'}
+// ---- กล้อง ----
+async function openCam(type){const nm=$('nm').value.trim();if(!nm){toast('กรุณากรอกชื่อก่อน');$('nm').focus();return}LS.set('nm',nm);pending=type;
+ try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});$('vid').srcObject=stream;$('cam').style.display='flex'}
+ catch(e){addRec(type,'');toast('ใช้กล้องไม่ได้ จึงบันทึกโดยไม่มีรูป')}}
+function closeCam(){$('cam').style.display='none';if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}
+$('snap').onclick=()=>{let p='';try{const v=$('vid'),c=document.createElement('canvas');c.width=160;c.height=Math.round(160*(v.videoHeight||3)/(v.videoWidth||4));c.getContext('2d').drawImage(v,0,0,c.width,c.height);p=c.toDataURL('image/jpeg',.5)}catch(e){}
+ closeCam();addRec(pending,p)};
+$('skip').onclick=closeCam;$('bin').onclick=()=>openCam('in');$('bout').onclick=()=>openCam('out');
+// ---- แอดมิน ----
+function stats2(){const i=rows.filter(r=>r.type==='in');$('astats').innerHTML=`<div class="st"><b>${i.length}</b>เช็คอินทั้งหมด</div><div class="st"><b>${i.filter(r=>r.late).length}</b>มาสาย</div><div class="st"><b>${i.reduce((a,r)=>a+(r.fine||0),0)}฿</b>ค่าปรับรวม</div>`}
+function renderAdmin(){stats2();const rs=rows.slice().sort((a,b)=>b.ts-a.ts),s={};
+ rs.forEach(r=>{const k=r.name||'?';s[k]=s[k]||{n:0,f:0,l:0};if(r.type==='in'){s[k].n++;s[k].f+=r.fine||0;if(r.late)s[k].l++}});
+ $('sum').innerHTML='<tr><th>ชื่อ</th><th>ครั้งที่เข้า</th><th>ครั้งที่สาย</th><th>ค่าปรับรวม (฿)</th></tr>'+Object.entries(s).map(([k,v])=>`<tr><td></td><td>${v.n}</td><td>${v.l}</td><td><b>${v.f}</b></td></tr>`).join('');
+ [...$('sum').querySelectorAll('tr')].slice(1).forEach((tr,i)=>tr.cells[0].textContent=Object.keys(s)[i]);
+ $('all').innerHTML='<tr><th>รูป</th><th>ชื่อ</th><th>เวลา</th><th>ประเภท</th><th>สาย</th><th>ปรับ</th><th></th></tr>'+rs.slice(0,200).map(r=>`<tr><td>${r.photo?`<img src="${r.photo}" width="36" style="border-radius:6px">`:''}</td><td></td><td>${fmt(r.ts)}</td><td>${r.type==='in'?'เข้า':'ออก'}</td><td class="${r.late?'late':''}">${r.late||'-'}</td><td>${r.fine||'-'}</td><td><button class="del" data-id="${r.id}">🗑</button></td></tr>`).join('');
+ [...$('all').querySelectorAll('tr')].slice(1).forEach((tr,i)=>tr.cells[1].textContent=rs[i].name)}
+$('save').onclick=async()=>{const s={in:$('sIn').value,out:$('sOut').value};if(!s.in){toast('กรุณาใส่เวลาเช็คอิน');return}
+ try{await db.doc('settings/schedule').set(s);sched=s;LS.set('sched',s);showSched();toast('บันทึกเวลาแล้ว')}catch(e){toast('บันทึกไม่สำเร็จ ลองใหม่')}};
+$('csv').onclick=async()=>{const dl=await claude.use('downloads');const esc=v=>'"'+String(v).replace(/"/g,'""')+'"';
+ const t='\ufeffชื่อ,ประเภท,เวลา,สาย(นาที),ค่าปรับ\n'+rows.map(r=>[r.name,r.type,new Date(r.ts).toLocaleString('th-TH'),r.late,r.fine].map(esc).join(',')).join('\n');
+ if(!dl){toast('ดาวน์โหลดไม่พร้อมใช้งาน');return}try{await dl.save({filename:'checkins.csv',data:t})}catch(e){}};
+function arm(btn,txt,fn){if(btn.dataset.a){clearTimeout(btn._t);delete btn.dataset.a;fn();return}btn.dataset.a=1;const o=btn.textContent;btn.textContent=txt;btn._t=setTimeout(()=>{delete btn.dataset.a;btn.textContent=o},3000)}
+$('all').addEventListener('click',e=>{const b=e.target.closest('.del');if(!b||!db)return;arm(b,'ยืนยัน?',async()=>{try{await db.doc('checkins/'+b.dataset.id).delete();toast('ลบรายการแล้ว')}catch(x){toast('ลบไม่สำเร็จ ลองใหม่')}})});
+$('delall').onclick=function(){if(!db)return;if(!rows.length){toast('ไม่มีข้อมูลให้ลบ');return}arm(this,'แตะอีกครั้งเพื่อยืนยันลบทั้งหมด',async()=>{try{for(const r of rows.slice())await db.doc('checkins/'+r.id).delete();toast('ลบประวัติทั้งหมดแล้ว')}catch(x){toast('ลบไม่สำเร็จ บางรายการอาจยังเหลือ')}})};
+$('xls').onclick=async()=>{if(!rows.length){toast('ยังไม่มีข้อมูลให้บันทึก');return}const dl=await claude.use('downloads');if(!dl){toast('ดาวน์โหลดไม่พร้อมใช้งาน');return}
+ try{if(!window.XLSX){toast('โหลดตัวสร้าง Excel ไม่ได้ ใช้ CSV แทน');$('csv').click();return}
+ const data=rows.slice().sort((a,b)=>a.ts-b.ts).map(r=>({'ชื่อ':r.name,'ประเภท':r.type==='in'?'เช็คอิน':'เช็คเอาท์','วันที่':new Date(r.ts).toLocaleDateString('th-TH'),'เวลา':hm(new Date(r.ts)),'สาย (นาที)':r.late||0,'ค่าปรับ (บาท)':r.fine||0}));
+ const wb=XLSX.utils.book_new(),ws=XLSX.utils.json_to_sheet(data);ws['!cols']=[{wch:24},{wch:10},{wch:12},{wch:8},{wch:10},{wch:12}];XLSX.utils.book_append_sheet(wb,ws,'ประวัติเช็คอิน');
+ const s={};rows.filter(r=>r.type==='in').forEach(r=>{const k=r.name||'?';s[k]=s[k]||{'ชื่อ':k,'ครั้งที่เข้า':0,'ครั้งที่สาย':0,'ค่าปรับรวม (บาท)':0};s[k]['ครั้งที่เข้า']++;if(r.late)s[k]['ครั้งที่สาย']++;s[k]['ค่าปรับรวม (บาท)']+=r.fine||0});
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(Object.values(s)),'สรุปค่าปรับ');
+ const buf=XLSX.write(wb,{type:'array',bookType:'xlsx'});
+ await dl.save({filename:'checkin-'+new Date().toISOString().slice(0,10)+'.xlsx',data:new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})})}
+ catch(e){if(!e||e.code!=='declined')toast('บันทึก Excel ไม่สำเร็จ')}};
+function tab(n){$('v1').style.display=n===1?'':'none';$('v2').style.display=n===2?'':'none';$('t1').className=n===1?'on':'sec';$('t2').className=n===2?'on':'sec'}
+$('t1').onclick=()=>tab(1);$('t2').onclick=()=>tab(2);
+// ---- เริ่มต้น (หน้าทำงานได้เองแม้ไม่มีเน็ต) ----
+$('nm').value=LS.get('nm','');showSched();showNet();mine();
+addEventListener('online',()=>{showNet();flush()});addEventListener('offline',showNet);setInterval(()=>{showNet();flush()},20000);
+(async()=>{try{const u=await claude.use('user');user=u;isAdmin=!!(u&&(u.isOwner()||u.canEdit()));
+ db=await claude.use('db');if(!db)return;
+ db.doc('settings/schedule').onSnapshot(s=>{if(s.exists){sched=s.data();LS.set('sched',sched);showSched();$('sIn').value=sched.in||'';$('sOut').value=sched.out||''}},()=>{});
+ if(isAdmin){$('t2').style.display='';db.collection('checkins').onSnapshot(q=>{rows=q.docs.map(d=>d.data());renderAdmin()},()=>{toast('โหลดข้อมูลแอดมินไม่สำเร็จ')})}
+ flush()}catch(e){}})();
+if(sched){$('sIn').value=sched.in||'';$('sOut').value=sched.out||''}
+</script></body></html>
